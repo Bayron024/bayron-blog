@@ -1,13 +1,198 @@
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客</title>
     <style>
-      .content{
-        color: gold;
-        font:64px bold;
-      }
-  </style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            background: url('file:///E:/WorkSpace/Git/bayron-blog/7.jpg') center/cover;
+            transition: transform 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .signature {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .link-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .link-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .link-title {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .link-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .signature {
+                font-size: 20px;
+            }
+
+            .link-title {
+                font-size: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <p class="content">你好！欢迎来到我的个人博客^^</p>
-  </body>
-<html>
+    <div class="container">
+        <div class="avatar"></div>
+        <h1 class="signature">Having a nice day</h1>
+        
+        <div class="links">
+            <a href="https://space.bilibili.com/3546699649779848" target="_blank">
+                <div class="link-item">
+                    <div class="link-title">
+                        <span class="icon">📺</span>
+                        B站空间
+                    </div>
+                    <div class="link-desc">欢迎来找本人玩</div>
+                </div>
+            </a>
+
+            <a href="https://github.com/Bayron024" target="_blank">
+                <div class="link-item">
+                    <div class="link-title">
+                        <span class="icon">💻</span>
+                        GitHub
+                    </div>
+                    <div class="link-desc">计算机小白，不要拷打我QAQ</div>
+                </div>
+            </a>
+
+            <div class="link-item" onclick="alert('QQ号：1328574706')">
+                <div class="link-title">
+                    <span class="icon">💬</span>
+                    QQ
+                </div>
+                <div class="link-desc">欢迎来找本人聊天</div>
+            </div>
+
+            <a href="https://steamcommunity.com/profiles/76561199733952633/" target="_blank">
+                <div class="link-item">
+                    <div class="link-title">
+                        <span class="icon">🎮</span>
+                        Steam
+                    </div>
+                    <div class="link-desc">以撒界大蛇，欢迎联机</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // 添加点击动画效果
+        document.querySelectorAll('.link-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 100);
+            });
+        });
+
+        // 头像加载失败时使用备用方案
+        document.querySelector('.avatar').addEventListener('error', function() {
+            this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            this.innerHTML = '<div style="line-height: 120px; color: white; font-size: 48px;">😊</div>';
+        });
+    </script>
+</body>
+</html>
