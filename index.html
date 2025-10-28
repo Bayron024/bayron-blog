@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人博客</title>
+    <title>个人博客 - 匹配小游戏</title>
     <style>
         * {
             margin: 0;
@@ -21,29 +21,32 @@
             padding: 20px;
         }
 
+        body.game-mode {
+            background: white;
+            padding: 0;
+        }
+
         .container {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
             max-width: 600px;
             width: 100%;
             text-align: center;
-            animation: fadeIn 0.8s ease-out;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body.game-mode .container {
+            background: white;
+            backdrop-filter: none;
+            border-radius: 0;
+            border: none;
+            padding: 0;
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .avatar {
@@ -53,11 +56,6 @@
             margin: 0 auto 20px;
             border: 3px solid rgba(255, 255, 255, 0.5);
             background: url('7.jpg') center/cover;
-            transition: transform 0.3s ease;
-        }
-
-        .avatar:hover {
-            transform: scale(1.05);
         }
 
         .signature {
@@ -65,7 +63,6 @@
             color: rgba(255, 255, 255, 0.9);
             margin-bottom: 30px;
             font-weight: 300;
-            letter-spacing: 1px;
         }
 
         .links {
@@ -78,15 +75,12 @@
             background: rgba(255, 255, 255, 0.1);
             padding: 15px 25px;
             border-radius: 12px;
-            transition: all 0.3s ease;
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .link-item:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .link-title {
@@ -116,77 +110,672 @@
             color: inherit;
         }
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
+        /* 游戏相关样式 */
+        .game-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
 
-            .signature {
-                font-size: 20px;
-            }
+        .game-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
 
-            .link-title {
-                font-size: 16px;
+        .game-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .game-subtitle {
+            font-size: 20px;
+            color: #666;
+        }
+
+        .game-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .text-options-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .image-options-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            flex: 1;
+            align-items: center;
+        }
+
+        .text-option {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            font-size: 16px;
+            color: #333;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .text-option.selected {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+        }
+
+        .image-option {
+            width: 200px;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .image-option.selected {
+            border-color: #ff6b6b;
+            background-color: #fff5f5;
+        }
+
+        .game-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .confirm-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .confirm-btn.error {
+            background: #f44336;
+        }
+
+        .message {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            max-width: 500px;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .success-message {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .special-message {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc80;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .text-options-container, .image-options-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .image-option {
+                width: 150px;
+                height: 150px;
             }
         }
     </style>
 </head>
 <body>
+    <button class="back-btn" onclick="backToHome()">← 返回主页</button>
+    
     <div class="container">
-        <div class="avatar"></div>
-        <h1 class="signature">Having a nice day</h1>
-        
-        <div class="links">
-            <a href="https://space.bilibili.com/3546699649779848" target="_blank">
-                <div class="link-item">
-                    <div class="link-title">
-                        <span class="icon">📺</span>
-                        B站空间
+        <!-- 主页内容 -->
+        <div class="home-content">
+            <div class="avatar"></div>
+            <h1 class="signature">Having a nice day</h1>
+            
+            <div class="links">
+                <a href="https://space.bilibili.com/3546699649779848" target="_blank">
+                    <div class="link-item">
+                        <div class="link-title">
+                            <span class="icon">📺</span>
+                            B站空间
+                        </div>
+                        <div class="link-desc">欢迎来找本人玩</div>
                     </div>
-                    <div class="link-desc">欢迎来找本人玩</div>
-                </div>
-            </a>
+                </a>
 
-            <a href="https://github.com/Bayron024" target="_blank">
-                <div class="link-item">
-                    <div class="link-title">
-                        <span class="icon">💻</span>
-                        GitHub
+                <a href="https://github.com/Bayron024" target="_blank">
+                    <div class="link-item">
+                        <div class="link-title">
+                            <span class="icon">💻</span>
+                            GitHub
+                        </div>
+                        <div class="link-desc">计算机小白，不要拷打我QAQ</div>
                     </div>
-                    <div class="link-desc">计算机小白，不要拷打我QAQ</div>
-                </div>
-            </a>
+                </a>
 
-            <div class="link-item" onclick="alert('QQ号：1328574706')">
-                <div class="link-title">
-                    <span class="icon">💬</span>
-                    QQ
+                <div class="link-item" onclick="alert('QQ号：1328574706')">
+                    <div class="link-title">
+                        <span class="icon">💬</span>
+                        QQ
+                    </div>
+                    <div class="link-desc">欢迎来找本人聊天</div>
                 </div>
-                <div class="link-desc">欢迎来找本人聊天</div>
-            </div>
 
-            <a href="https://steamcommunity.com/profiles/76561199733952633/" target="_blank">
-                <div class="link-item">
+                <a href="https://steamcommunity.com/profiles/76561199733952633/" target="_blank">
+                    <div class="link-item">
+                        <div class="link-title">
+                            <span class="icon">🎮</span>
+                            Steam
+                        </div>
+                        <div class="link-desc">以撒界萌新，欢迎联机</div>
+                    </div>
+                </a>
+
+                <!-- 游戏按钮 -->
+                <div class="link-item" onclick="startGame()">
                     <div class="link-title">
                         <span class="icon">🎮</span>
-                        Steam
+                        开始养成小游戏
                     </div>
-                    <div class="link-desc">以撒界大蛇，欢迎联机</div>
+                    <div class="link-desc">警告：内含部分猎奇内容</div>
                 </div>
-            </a>
+            </div>
+        </div>
+
+        <!-- 游戏内容 -->
+        <div class="game-container">
+            <div class="game-header">
+                <h2 class="game-title">养成系小游戏</h2>
+                <h3 class="game-subtitle" id="level-title">第1关：救哪个？</h3>
+            </div>
+            
+            <div class="game-content">
+                <!-- 文字选项在上 -->
+                <div class="text-options-container" id="text-options">
+                    <!-- 文字选项将通过JS动态生成 -->
+                </div>
+                
+                <!-- 图片选项在下 -->
+                <div class="image-options-container" id="image-options">
+                    <!-- 图片选项将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="game-footer">
+                <div class="message error-message" id="error-message"></div>
+                <div class="message success-message" id="success-message"></div>
+                <div class="message special-message" id="special-message"></div>
+                
+                <button class="confirm-btn" id="confirm-btn">确认</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // 添加点击动画效果
-        document.querySelectorAll('.link-item').forEach(item => {
-            item.addEventListener('click', function() {
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 100);
+        // 游戏数据 - 按照新的命名规则
+        const gameData = [
+            // 第1关 - 特殊关卡，有两个图片和三个文字选项
+            {
+                title: "第1关：救哪个？",
+                type: "special",
+                images: [
+                    "images/content/level1/nyn_1_a.jpg",  // 左边：娜娜
+                    "images/content/level1/rain_1_a.jpg"  // 右边：小雨
+                ],
+                texts: ["救娜娜", "救小雨", "都救"],
+                correctAnswer: 2,
+                successMessage: "你救下了她们！这是注定不凡的一对孩子",
+                errorMessages: [
+                    "为什么要放弃小雨！？！？",
+                    "娜艺娜做错什么了！？！？",
+                    "这个选项是错误的，请重新选择"
+                ],
+                changeImages: false
+            },
+            // 第2关 - 改为特殊关卡，二选一
+            {
+                title: "第2关：喂养食物",
+                type: "special",
+                images: [
+                    "images/content/level2/nyn_2_a.jpg",  // 左边：娜娜
+                    "images/content/level2/rain_2_a.jpg"  // 右边：小雨
+                ],
+                texts: ["鸡蛋牛奶", "炸鸡汉堡"],
+                correctAnswer: 0,
+                successMessage: "娜娜和小雨感到很健康！她们茁壮成长了",
+                errorMessages: [
+                    "",
+                    "你给她们吃了炸鸡汉堡，健康值-100，你输了"
+                ],
+                changeImages: false
+            },
+            // 第3关 - 只有这一关正确后会变化图片
+            {
+                title: "第3关：各有所长",
+                type: "normal",
+                images: [
+                    "images/content/level3/nyn_3_a.jpg",  // 左边：娜娜
+                    "images/content/level3/rain_3_a.jpg"  // 右边：小雨
+                ],
+                successImages: [
+                    "images/content/level3/nyn_3_b.jpg",  // 正确后左边变化
+                    "images/content/level3/rain_3_b.jpg"  // 正确后右边变化
+                ],
+                texts: ["武功", "舞蹈"],
+                correctPairs: { 0: 1, 1: 0 },
+                successMessage: "两人在各自方面都天赋异禀，你做出了正确的选择",
+                errorMessages: [
+                    "娜艺娜在练武时摔倒进医院了，而小雨出名后因为卖木薯粉塌房了，天下再无女侠",
+                    "y"
+                ],
+                changeImages: true
+            },
+            // 第4关 - 不会立即输掉的关卡
+            {
+                title: "第4关：穿衣打扮",
+                type: "normal",
+                images: [
+                    "images/content/level4/nyn_4_a.jpg",  // 左边：娜娜
+                    "images/content/level4/rain_4_a.jpg"  // 右边：小雨
+                ],
+                texts: ["帅气", "华丽"],
+                correctPairs: { 0: 1, 1: 0 },
+                successMessage: "经过你的一番打扮，两人的气质更加突出了！",
+                errorMessages: [
+                    "看来你的审美比较特别。两人的魅力减少35%",
+                    "决定2应该匹配右边的图片"
+                ],
+                changeImages: false,
+                noFail: true // 标记这一关不会导致游戏结束
+            },
+            // 第5关 - 最终关卡，会检查第4关的结果
+            {
+                title: "第5关：去往何方",
+                type: "normal",
+                images: [
+                    "images/content/level5/nyn_5_a.jpg",  // 左边：娜娜
+                    "images/content/level5/rain_5_a.jpg"  // 右边：小雨
+                ],
+                texts: ["选秀", "闯荡江湖"],
+                correctPairs: { 0: 0, 1: 1 },
+                successMessage: "完美结局🎉 你成功养成了：🎊 皇后和武林至尊！",
+                specialFailMessage: "娜娜由于魅力不足，选秀失败；雨姐也在闯荡江湖时不知所踪",
+                normalFailMessage: "雨姐虽然带派，但还是输给了经验更加丰富的乔碧萝。至于娜艺娜——你难道真准备让她独自闯荡？",
+                errorMessages: [
+                    "雨姐虽然带派，但还是输给了经验更加丰富的乔碧萝。至于娜艺娜——你难道真准备让她独自闯荡？",
+                    "结局B应该匹配右边的图片"
+                ],
+                changeImages: false
+            }
+        ];
+
+        // 游戏状态
+        let currentLevel = 0;
+        let selectedTexts = [];
+        let selectedImages = [];
+        let gameStarted = false;
+        let isResultShown = false;
+        let level4Failed = false; // 记录第4关是否失败
+
+        // DOM元素
+        const homeContent = document.querySelector('.home-content');
+        const gameContainer = document.querySelector('.game-container');
+        const levelTitle = document.getElementById('level-title');
+        const textOptionsContainer = document.getElementById('text-options');
+        const imageOptionsContainer = document.getElementById('image-options');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const specialMessage = document.getElementById('special-message');
+        const backBtn = document.querySelector('.back-btn');
+
+        // 开始游戏
+        function startGame() {
+            document.body.classList.add('game-mode');
+            homeContent.style.display = 'none';
+            gameContainer.style.display = 'flex';
+            backBtn.style.display = 'block';
+            gameStarted = true;
+            currentLevel = 0;
+            level4Failed = false; // 重置第4关状态
+            loadLevel(currentLevel);
+        }
+
+        // 返回主页
+        function backToHome() {
+            document.body.classList.remove('game-mode');
+            homeContent.style.display = 'block';
+            gameContainer.style.display = 'none';
+            backBtn.style.display = 'none';
+            gameStarted = false;
+        }
+
+        // 加载关卡
+        function loadLevel(levelIndex) {
+            const level = gameData[levelIndex];
+            levelTitle.textContent = level.title;
+            
+            // 重置选择
+            selectedTexts = [];
+            selectedImages = [];
+            isResultShown = false;
+            
+            // 清空选项容器
+            textOptionsContainer.innerHTML = '';
+            imageOptionsContainer.innerHTML = '';
+            
+            // 隐藏所有消息
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            specialMessage.style.display = 'none';
+            
+            // 特殊关卡处理
+            if (level.type === "special") {
+                // 特殊关卡：显示两个图片和三个文字选项
+                level.images.forEach((image, index) => {
+                    const imageOption = document.createElement('div');
+                    imageOption.className = 'image-option';
+                    imageOption.style.backgroundImage = `url(${image})`;
+                    imageOption.dataset.index = index;
+                    imageOption.onclick = () => selectImage(index);
+                    imageOptionsContainer.appendChild(imageOption);
+                });
+                
+                level.texts.forEach((text, index) => {
+                    const textOption = document.createElement('div');
+                    textOption.className = 'text-option';
+                    textOption.textContent = text;
+                    textOption.dataset.index = index;
+                    textOption.onclick = () => selectText(index);
+                    textOptionsContainer.appendChild(textOption);
+                });
+                
+                // 特殊关卡只需要选择一个选项
+                confirmBtn.textContent = "确认选择";
+                confirmBtn.style.display = 'none';
+                confirmBtn.onclick = checkSpecialAnswer;
+            } else {
+                // 正常关卡：显示两个图片和两个文字
+                level.images.forEach((image, index) => {
+                    const imageOption = document.createElement('div');
+                    imageOption.className = 'image-option';
+                    imageOption.style.backgroundImage = `url(${image})`;
+                    imageOption.dataset.index = index;
+                    imageOption.onclick = () => selectImage(index);
+                    imageOptionsContainer.appendChild(imageOption);
+                });
+                
+                level.texts.forEach((text, index) => {
+                    const textOption = document.createElement('div');
+                    textOption.className = 'text-option';
+                    textOption.textContent = text;
+                    textOption.dataset.index = index;
+                    textOption.onclick = () => selectText(index);
+                    textOptionsContainer.appendChild(textOption);
+                });
+                
+                confirmBtn.textContent = "确认匹配";
+                confirmBtn.style.display = 'none';
+                confirmBtn.onclick = checkNormalAnswer;
+            }
+            
+            // 重置确认按钮样式
+            confirmBtn.classList.remove('error');
+        }
+
+        // 选择文字
+        function selectText(index) {
+            if (isResultShown) return;
+            
+            const level = gameData[currentLevel];
+            
+            if (level.type === "special") {
+                // 特殊关卡：选择一个文字选项
+                selectedTexts = [index];
+                
+                // 更新UI
+                document.querySelectorAll('.text-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                document.querySelector(`.text-option[data-index="${index}"]`).classList.add('selected');
+                
+                // 显示确认按钮
+                confirmBtn.style.display = 'block';
+            } else {
+                // 正常关卡：选择文字与图片匹配
+                if (selectedTexts.includes(index)) {
+                    selectedTexts = selectedTexts.filter(i => i !== index);
+                    document.querySelector(`.text-option[data-index="${index}"]`).classList.remove('selected');
+                } else if (selectedTexts.length < 2) {
+                    selectedTexts.push(index);
+                    document.querySelector(`.text-option[data-index="${index}"]`).classList.add('selected');
+                }
+                
+                checkSelectionComplete();
+            }
+        }
+
+        // 选择图片
+        function selectImage(index) {
+            if (isResultShown) return;
+            
+            const level = gameData[currentLevel];
+            
+            if (level.type === "special") {
+                return;
+            } else {
+                if (selectedImages.includes(index)) {
+                    selectedImages = selectedImages.filter(i => i !== index);
+                    document.querySelector(`.image-option[data-index="${index}"]`).classList.remove('selected');
+                } else if (selectedImages.length < 2) {
+                    selectedImages.push(index);
+                    document.querySelector(`.image-option[data-index="${index}"]`).classList.add('selected');
+                }
+                
+                checkSelectionComplete();
+            }
+        }
+
+        // 检查选择是否完成
+        function checkSelectionComplete() {
+            const level = gameData[currentLevel];
+            
+            if (level.type === "special") {
+                confirmBtn.style.display = selectedTexts.length === 1 ? 'block' : 'none';
+            } else {
+                confirmBtn.style.display = (selectedTexts.length === 2 && selectedImages.length === 2) ? 'block' : 'none';
+            }
+        }
+
+        // 检查特殊关卡答案
+        function checkSpecialAnswer() {
+            const level = gameData[currentLevel];
+            const selectedTextIndex = selectedTexts[0];
+            isResultShown = true;
+            
+            document.querySelectorAll('.text-option, .image-option').forEach(option => {
+                option.style.pointerEvents = 'none';
             });
-        });
+            
+            if (selectedTextIndex === level.correctAnswer) {
+                successMessage.textContent = level.successMessage;
+                successMessage.style.display = 'block';
+                
+                confirmBtn.textContent = "下一关";
+                confirmBtn.onclick = nextLevel;
+            } else {
+                errorMessage.textContent = level.errorMessages[selectedTextIndex] || "很遗憾，选择错误！";
+                errorMessage.style.display = 'block';
+                
+                confirmBtn.textContent = "从头开始";
+                confirmBtn.classList.add('error');
+                confirmBtn.onclick = function() {
+                    currentLevel = 0;
+                    level4Failed = false;
+                    loadLevel(currentLevel);
+                };
+            }
+        }
+
+        // 检查正常关卡答案
+        function checkNormalAnswer() {
+            const level = gameData[currentLevel];
+            isResultShown = true;
+            
+            document.querySelectorAll('.text-option, .image-option').forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            let correct = true;
+            let errorIndex = -1;
+            
+            for (let i = 0; i < selectedImages.length; i++) {
+                const imageIndex = selectedImages[i];
+                const textIndex = selectedTexts[i];
+                
+                if (level.correctPairs[imageIndex] !== textIndex) {
+                    correct = false;
+                    errorIndex = i;
+                    break;
+                }
+            }
+            
+            if (correct) {
+                // 处理第4关的特殊逻辑
+                if (currentLevel === 3) { // 第4关
+                    level4Failed = false; // 第4关正确，重置标记
+                }
+                
+                // 处理第5关的特殊失败逻辑
+                if (currentLevel === 4 && level4Failed) { // 第5关且第4关失败
+                    specialMessage.textContent = level.specialFailMessage;
+                    specialMessage.style.display = 'block';
+                    
+                    confirmBtn.textContent = "重新开始";
+                    confirmBtn.classList.add('error');
+                    confirmBtn.onclick = function() {
+                        currentLevel = 0;
+                        level4Failed = false;
+                        loadLevel(currentLevel);
+                    };
+                    return;
+                }
+                
+                // 正常正确情况
+                successMessage.textContent = level.successMessage;
+                successMessage.style.display = 'block';
+                
+                // 只有第3关正确后变化图片
+                if (level.changeImages && level.successImages) {
+                    document.querySelectorAll('.image-option').forEach((option, index) => {
+                        option.style.backgroundImage = `url(${level.successImages[index]})`;
+                    });
+                }
+                
+                if (currentLevel === 4) {
+                    confirmBtn.textContent = "重新开始";
+                    confirmBtn.onclick = function() {
+                        currentLevel = 0;
+                        level4Failed = false;
+                        loadLevel(currentLevel);
+                    };
+                } else {
+                    confirmBtn.textContent = "下一关";
+                    confirmBtn.onclick = nextLevel;
+                }
+            } else {
+                // 处理第4关的特殊逻辑（不会输掉游戏）
+                if (currentLevel === 3) { // 第4关
+                    level4Failed = true; // 记录第4关失败
+                    successMessage.textContent = "看来你的审美比较特别。两人的魅力减少35%";
+                    successMessage.style.display = 'block';
+                    
+                    confirmBtn.textContent = "下一关";
+                    confirmBtn.onclick = nextLevel;
+                    return;
+                }
+                
+                // 正常错误情况
+                errorMessage.textContent = level.errorMessages[errorIndex] || "很遗憾，匹配错误！";
+                errorMessage.style.display = 'block';
+                
+                confirmBtn.textContent = "从头开始";
+                confirmBtn.classList.add('error');
+                confirmBtn.onclick = function() {
+                    currentLevel = 0;
+                    level4Failed = false;
+                    loadLevel(currentLevel);
+                };
+            }
+        }
+
+        // 下一关
+        function nextLevel() {
+            currentLevel++;
+            
+            if (currentLevel < gameData.length) {
+                loadLevel(currentLevel);
+            } else {
+                levelTitle.textContent = "恭喜你！通关了！";
+                textOptionsContainer.innerHTML = '<div class="text-option">🎉 你成功养成了：</div>';
+                imageOptionsContainer.innerHTML = '<div class="image-option">🎊 皇后和武林至尊！</div>';
+                confirmBtn.textContent = "重新开始";
+                confirmBtn.onclick = function() {
+                    currentLevel = 0;
+                    level4Failed = false;
+                    loadLevel(currentLevel);
+                };
+            }
+        }
 
         // 头像加载失败时使用备用方案
         document.querySelector('.avatar').addEventListener('error', function() {
